@@ -6,14 +6,14 @@ app = FastAPI(title="CORS GA2")
 
 # These are frontend origins allowed to call this API from browser
 origins = [
-    "http://localhost:4200",
-    "https://my-frontend.example.com",
+    "https://dash-650zd5.example.com"
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,          # Do not use ["*"] for real apps with login/cookies
-    allow_credentials=True,         # Allow cookies / Authorization headers
+    #allow_origins=origins,          # Do not use ["*"] for real apps with login/cookies
+    allow_origins=["*"],
+    allow_credentials=False,         # Allow cookies / Authorization headers
     allow_methods=["GET", "POST", "PATCH", "DELETE"],
     allow_headers=["Authorization", "Content-Type"],
 )
@@ -36,11 +36,14 @@ async def add_request_id_header(request: Request, call_next):
 
 def GetResponseJson (number_list):
     count = 0
-    min = 0
+    min = 0 
     max = 0
     sum = 0
     mea = 0
     for num in number_list:
+        if count == 0:
+            min = num
+
         if (min > num):
             min = num
         if (max < num):
