@@ -1,8 +1,21 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
+from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from jose import jwt, JWTError, ExpiredSignatureError
 import uuid, time
 
+ISSUER = "https://idp.exam.local"
+AUDIENCE = "tds-fmjbno3b.apps.exam.local"
+PUBLIC_KEY_FILE = "public.pem"
+ALGORITHM = "RS256"
+
+with open(PUBLIC_KEY_FILE, "r") as f:
+   PUBLIC_KEY = f.read()
+
 app = FastAPI(title="CORS GA2")
+
+class TokenRequest(BaseModel):
+    token: str
 
 # These are frontend origins allowed to call this API from browser
 origins = [
@@ -77,4 +90,18 @@ def predict(payload: dict):
         "received": payload,
         "label": "demo"
     }
+
+@app.post("/verify")
+def verifytoken (body: TokenRequest):
+    token = body.token
+    try:
+        payload = jwt.decode(token, PUBLIC_KEY, algorithms=[ALGORITHM], audience=AUDIENCE, issuer=ISSUER)
+        email = payload.get("email")
+        sub = payload.get("sub")
+        aud = payload.get("aud") or AUDIENCE
+        return JSONResponse(status_code=200, content={"valid": True, "email": email, "sub": sub, "aud": aud})
+    except ExpiredSignatureError:
+        return JSONResponse(status_code=401, content={"valid": False})
+    except JWTError:
+        return JSONResponse(status_code=401, content={"valid": False})
 
