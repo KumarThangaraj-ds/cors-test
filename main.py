@@ -32,7 +32,7 @@ async def add_request_id_header(request: Request, call_next):
     return response
 
 def GetResponseJson (number_list):
-    count = 0
+    count = 0 # it counts the numbers in the list
     min = 0 
     max = 0
     sum = 0
