@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from jose import jwt, JWTError, ExpiredSignatureError
+from starlette.responses import JSONResponse
 import uuid, time
 
 ISSUER = "https://idp.exam.local"
